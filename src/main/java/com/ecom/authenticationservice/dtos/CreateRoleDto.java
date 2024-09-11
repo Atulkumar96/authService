@@ -1,4 +1,4 @@
-package dtos;
+package com.ecom.authenticationservice.dtos;
 
 import lombok.Getter;
 import lombok.Setter;

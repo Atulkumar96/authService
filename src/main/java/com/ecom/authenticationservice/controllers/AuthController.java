@@ -1,7 +1,7 @@
-package controllers;
+package com.ecom.authenticationservice.controllers;
 
-import dtos.*;
-import models.SessionStatus;
+import com.ecom.authenticationservice.dtos.*;
+import com.ecom.authenticationservice.models.SessionStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthController {
 
-    @PostMapping("/login")
+    @PostMapping("login")
     public ResponseEntity<UserDto> login(@RequestBody LoginRequestDto loginRequestDto){
         return null;
     }

@@ -1,7 +1,7 @@
-package controllers;
+package com.ecom.authenticationservice.controllers;
 
-import dtos.CreateRoleDto;
-import models.Role;
+import com.ecom.authenticationservice.dtos.CreateRoleDto;
+import com.ecom.authenticationservice.models.Role;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +13,6 @@ public class RoleController {
 
     @PostMapping("/roles")
     private ResponseEntity<Role> createRole(CreateRoleDto createRoleDto) {
-        return null;
+        return null; ////private method check
     }
 }

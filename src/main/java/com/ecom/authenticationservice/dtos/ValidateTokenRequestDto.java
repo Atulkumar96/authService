@@ -1,4 +1,4 @@
-package dtos;
+package com.ecom.authenticationservice.dtos;
 
 public class ValidateTokenRequestDto {
     private String token;
