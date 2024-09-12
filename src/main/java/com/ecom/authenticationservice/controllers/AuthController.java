@@ -3,6 +3,7 @@ package com.ecom.authenticationservice.controllers;
 import com.ecom.authenticationservice.dtos.*;
 import com.ecom.authenticationservice.models.SessionStatus;
 import com.ecom.authenticationservice.services.AuthService;
+import com.ecom.authenticationservice.services.AuthServiceContract;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final AuthService authService;
+    private final AuthServiceContract authServiceDI;
 
-    public AuthController(AuthService authService) {
-        this.authService = authService;
+    public AuthController(AuthServiceContract authServiceDI) {
+        this.authServiceDI = authServiceDI;
     }
 
     @PostMapping("login")
@@ -32,7 +33,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<UserDto> signUp(@RequestBody SignUpRequestDto signUpRequestDto){
-        UserDto userDto = authService.signUp(signUpRequestDto.getEmail(), signUpRequestDto.getPassword());
+        UserDto userDto = authServiceDI.signUp(signUpRequestDto);
         return new ResponseEntity<>(userDto, HttpStatus.CREATED);
     }
 

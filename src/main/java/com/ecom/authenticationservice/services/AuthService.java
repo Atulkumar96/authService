@@ -1,5 +1,6 @@
 package com.ecom.authenticationservice.services;
 
+import com.ecom.authenticationservice.dtos.SignUpRequestDto;
 import com.ecom.authenticationservice.dtos.UserDto;
 import com.ecom.authenticationservice.models.User;
 import com.ecom.authenticationservice.repositories.UserRepository;
@@ -7,7 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthService {
+public class AuthService implements AuthServiceContract{
     //dependencies objects
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private UserRepository userRepository;
@@ -17,10 +18,10 @@ public class AuthService {
         this.userRepository = userRepository;
     }
 
-    public UserDto signUp(String email, String password) {
+    public UserDto signUp(SignUpRequestDto signUpRequestDto) {
         User newUser = new User();
-        newUser.setEmail(email);
-        newUser.setPassword(bCryptPasswordEncoder.encode(password));
+        newUser.setEmail(signUpRequestDto.getEmail());
+        newUser.setPassword(bCryptPasswordEncoder.encode(signUpRequestDto.getPassword()));
 
         User signedUpUser = userRepository.save(newUser);
 
