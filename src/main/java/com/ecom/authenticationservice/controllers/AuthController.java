@@ -23,7 +23,7 @@ public class AuthController {
 
     @PostMapping("login")
     public ResponseEntity<UserDto> login(@RequestBody LoginRequestDto loginRequestDto){
-        return null;
+        return authServiceDI.login(loginRequestDto);
     }
 
     @PostMapping("/logout")
