@@ -8,6 +8,8 @@ import com.ecom.authenticationservice.models.SessionStatus;
 import com.ecom.authenticationservice.models.User;
 import com.ecom.authenticationservice.repositories.SessionRepository;
 import com.ecom.authenticationservice.repositories.UserRepository;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.MacAlgorithm;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.MultiValueMapAdapter;
 
+import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
@@ -63,7 +66,21 @@ public class AuthService implements AuthServiceContract{
 
         //Email & Password matched
         //Generate Token & Create User's Session
-        String token = RandomStringUtils.randomAlphanumeric(30); //Used Apache commons library
+        //Set Token in HttpHeaders.SET_COOKIE & return the ResponseEntity
+        //String token = RandomStringUtils.randomAlphanumeric(30); //Used Apache commons library
+
+        //Algo & Key - should be in properties/environment variable
+        MacAlgorithm algo = Jwts.SIG.HS256;
+        SecretKey key = algo.key().build();
+
+        //payload data in JWT (JSON Web Token)
+        Map<String, Object> jsonJWTPayload = new HashMap<>();
+        jsonJWTPayload.put("Email", user.getEmail());
+        jsonJWTPayload.put("createdAt", new Date());
+        jsonJWTPayload.put("expiryAt", new Date(LocalDate.now().plusDays(7).toEpochDay()));
+
+        //"Build the JWT Token" - using its "signing algo & payload"
+        String token = Jwts.builder().claims(jsonJWTPayload).signWith(key, algo).compact();
 
         Session session = new Session();
         session.setToken(token);
@@ -76,7 +93,7 @@ public class AuthService implements AuthServiceContract{
 
         sessionRepository.save(session);
 
-        //Set Token in Cookie to return
+        //Set Token in HttpHeaders.SET_COOKIE & return via ResponseEntity
         MultiValueMap<String, String> headers = new MultiValueMapAdapter<>(new HashMap<>());
         headers.add(HttpHeaders.SET_COOKIE, "auth-token:"+token);
 //        Map<String,String> headers = new HashMap<>();
