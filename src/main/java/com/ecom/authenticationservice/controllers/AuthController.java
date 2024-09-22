@@ -1,6 +1,7 @@
 package com.ecom.authenticationservice.controllers;
 
 import com.ecom.authenticationservice.dtos.*;
+import com.ecom.authenticationservice.exceptions.InvalidTokenException;
 import com.ecom.authenticationservice.models.SessionStatus;
 import com.ecom.authenticationservice.services.AuthService;
 import com.ecom.authenticationservice.services.AuthServiceContract;
@@ -15,10 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final AuthServiceContract authServiceDI;
+    private final AuthServiceContract authServiceDI; //implementation is set during runtime
 
     public AuthController(AuthServiceContract authServiceDI) {
-        this.authServiceDI = authServiceDI;
+        this.authServiceDI = authServiceDI; //Checks Implementation of Interface & Injects, @Primary service gets injected if multiple implementaions are found
     }
 
     @PostMapping("login")
@@ -38,7 +39,8 @@ public class AuthController {
     }
 
     @PostMapping("/validate")
-    public ResponseEntity<SessionStatus> validateUser(@RequestBody ValidateTokenRequestDto validateTokenRequestDto){
-        return null;
+    public ResponseEntity<SessionStatus> validateUser(@RequestBody ValidateTokenRequestDto validateTokenRequestDto) throws InvalidTokenException {
+        SessionStatus sessionStatus = authServiceDI.validateToken(validateTokenRequestDto);
+        return new ResponseEntity<>(sessionStatus, HttpStatus.OK);
     }
 }

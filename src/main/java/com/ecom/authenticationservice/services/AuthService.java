@@ -3,6 +3,8 @@ package com.ecom.authenticationservice.services;
 import com.ecom.authenticationservice.dtos.LoginRequestDto;
 import com.ecom.authenticationservice.dtos.SignUpRequestDto;
 import com.ecom.authenticationservice.dtos.UserDto;
+import com.ecom.authenticationservice.dtos.ValidateTokenRequestDto;
+import com.ecom.authenticationservice.exceptions.InvalidTokenException;
 import com.ecom.authenticationservice.models.Session;
 import com.ecom.authenticationservice.models.SessionStatus;
 import com.ecom.authenticationservice.models.User;
@@ -61,7 +63,7 @@ public class AuthService implements AuthServiceContract{
 
         User user = userOptionalWithEmailinDb.get();
         if(!bCryptPasswordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())){
-            throw new BadCredentialsException("Wrong password");
+            throw new BadCredentialsException("Wrong UserId or password");
         }
 
         //Email & Password matched
@@ -100,6 +102,15 @@ public class AuthService implements AuthServiceContract{
 //        headers.put(HttpHeaders.SET_COOKIE, "auth-token: "+token);
 
         return new ResponseEntity<>(UserDto.from(user),headers, HttpStatus.OK);
+    }
+
+    @Override
+    public SessionStatus validateToken(ValidateTokenRequestDto validateTokenRequestDto) throws InvalidTokenException {
+        Optional<Session> session = sessionRepository.findByTokenAndUser_Id(validateTokenRequestDto.getToken(), validateTokenRequestDto.getUserId());
+        if (session.isEmpty()) {
+            throw new InvalidTokenException("Invalid token, Continuous Spamming will block your IP");
+        }
+        return null;
     }
 
 }

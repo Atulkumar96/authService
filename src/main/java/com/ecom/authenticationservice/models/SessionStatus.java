@@ -2,5 +2,6 @@ package com.ecom.authenticationservice.models;
 
 public enum SessionStatus {
     ACTIVE,
-    ENDED
+    ENDED,
+    INVALID
 }
