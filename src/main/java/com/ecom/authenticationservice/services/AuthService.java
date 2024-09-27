@@ -10,6 +10,8 @@ import com.ecom.authenticationservice.models.SessionStatus;
 import com.ecom.authenticationservice.models.User;
 import com.ecom.authenticationservice.repositories.SessionRepository;
 import com.ecom.authenticationservice.repositories.UserRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.MacAlgorithm;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -104,13 +106,25 @@ public class AuthService implements AuthServiceContract{
         return new ResponseEntity<>(UserDto.from(user),headers, HttpStatus.OK);
     }
 
-    @Override
+    @Override //Validate Token Request will come from API Gateway/Kong
     public SessionStatus validateToken(ValidateTokenRequestDto validateTokenRequestDto) throws InvalidTokenException {
         Optional<Session> session = sessionRepository.findByTokenAndUser_Id(validateTokenRequestDto.getToken(), validateTokenRequestDto.getUserId());
+        // 1. Invalid Token Exception Handling
         if (session.isEmpty()) {
             throw new InvalidTokenException("Invalid token, Continuous Spamming will block your IP");
         }
-        return null;
+
+        //2. If session exists with the provided token then have the jws(JSON Web Signature) claims
+        Jws<Claims> jwsClaims = Jwts.parser().build().parseSignedClaims(validateTokenRequestDto.getToken());
+
+        String email = (String) jwsClaims.getPayload().get("Email");
+        Date createdAt = (Date) jwsClaims.getPayload().get("createdAt");
+        Date expiryAt = (Date) jwsClaims.getPayload().get("expiryAt");
+
+        //3. Check the createdAt and other payload data
+        // & return the SessionStatus accordingly
+
+        return SessionStatus.ACTIVE;
     }
 
 }

@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+//Beans for our created Auth Service - Not used any standard protocol i.e. OAuth2
 @Configuration
 public class SpringSecurity {
 
